@@ -96,27 +96,51 @@ This application consists of two services: the **FastAPI Backend** and the **Str
 
 ### Step 1: Start the FastAPI Backend
 
-In your first terminal window (with `.venv` activated):
+Open your **first terminal** in the project directory:
 
-```bash
-# Method A: Using python directly
-python main.py
+**Option A (Activate venv first):**
+- In Command Prompt (`cmd`):
+  ```cmd
+  .venv\Scripts\activate.bat
+  uvicorn main:app --reload
+  ```
+- In PowerShell:
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  uvicorn main:app --reload
+  ```
 
-# Method B: Using uvicorn
-uvicorn main:app --reload --host 127.0.0.1 --port 8000
+**Option B (Run directly without activating):**
+```cmd
+.\.venv\Scripts\python.exe main.py
 ```
 
-- The API will start on: **`http://127.0.0.1:8000`**
-- Interactive Swagger API Documentation: **`http://127.0.0.1:8000/docs`**
-- Alternative ReDoc Documentation: **`http://127.0.0.1:8000/redoc`**
+- API Base URL: **`http://127.0.0.1:8000`**
+- Interactive Swagger Docs: **`http://127.0.0.1:8000/docs`**
+
+---
 
 ### Step 2: Start the Streamlit Frontend
 
-Open a **second terminal window** (with `.venv` activated in the same directory):
+Open a **second terminal window** in the same folder:
 
-```bash
-streamlit run frontend/app.py
+**Option A (Activate venv first):**
+- In Command Prompt (`cmd`):
+  ```cmd
+  .venv\Scripts\activate.bat
+  streamlit run frontend/app.py
+  ```
+- In PowerShell:
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  streamlit run frontend/app.py
+  ```
+
+**Option B (Run directly using the virtual environment):**
+```cmd
+.\.venv\Scripts\python.exe -m streamlit run frontend/app.py
 ```
+*(or `.\.venv\Scripts\streamlit.exe run frontend/app.py`)*
 
 - Streamlit will open your browser at: **`http://localhost:8501`**
 
