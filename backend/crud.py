@@ -1,33 +1,26 @@
-"""
-CRUD (Create, Read, Update, Delete) operations for the database.
-Keeps SQL / ORM operations separated from route handlers for clean modular architecture.
-"""
-
 from typing import List, Optional, Dict
 from datetime import date
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-
 from backend import models, schemas
 from backend.auth import hash_password
 
 
-# ==========================================
+
 # User CRUD Operations
-# ==========================================
 
 def get_user_by_username(db: Session, username: str) -> Optional[models.User]:
-    """Retrieve a user by their unique username."""
+    
     return db.query(models.User).filter(models.User.username == username).first()
 
 
 def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
-    """Retrieve a user by their unique email."""
+
     return db.query(models.User).filter(models.User.email == email).first()
 
 
 def create_user(db: Session, user: schemas.UserCreate) -> models.User:
-    """Create a new user with a hashed password."""
+
     hashed_pwd = hash_password(user.password)
     db_user = models.User(
         username=user.username,
@@ -40,12 +33,10 @@ def create_user(db: Session, user: schemas.UserCreate) -> models.User:
     return db_user
 
 
-# ==========================================
 # Expense CRUD Operations
-# ==========================================
 
 def create_expense(db: Session, expense: schemas.ExpenseCreate, user_id: int) -> models.Expense:
-    """Create a new expense linked to the authenticated user."""
+    
     db_expense = models.Expense(
         title=expense.title,
         amount=expense.amount,
@@ -70,13 +61,7 @@ def get_expenses(
     skip: int = 0,
     limit: int = 100
 ) -> List[models.Expense]:
-    """
-    Get a list of expenses for a specific user with optional filters:
-    - category filter
-    - date range (start_date to end_date)
-    - keyword search in title or description
-    - pagination (skip, limit)
-    """
+
     query = db.query(models.Expense).filter(models.Expense.user_id == user_id)
 
     if category and category != "All":
@@ -100,7 +85,6 @@ def get_expenses(
 
 
 def get_expense_by_id(db: Session, expense_id: int, user_id: int) -> Optional[models.Expense]:
-    """Retrieve a single expense by ID belonging to the user."""
     return db.query(models.Expense).filter(
         models.Expense.id == expense_id,
         models.Expense.user_id == user_id
@@ -113,7 +97,6 @@ def update_expense(
     expense_update: schemas.ExpenseUpdate,
     user_id: int
 ) -> Optional[models.Expense]:
-    """Update fields of an existing expense."""
     db_expense = get_expense_by_id(db, expense_id=expense_id, user_id=user_id)
     if not db_expense:
         return None
@@ -128,7 +111,7 @@ def update_expense(
 
 
 def delete_expense(db: Session, expense_id: int, user_id: int) -> bool:
-    """Delete an expense record."""
+
     db_expense = get_expense_by_id(db, expense_id=expense_id, user_id=user_id)
     if not db_expense:
         return False
@@ -139,14 +122,7 @@ def delete_expense(db: Session, expense_id: int, user_id: int) -> bool:
 
 
 def get_expense_summary(db: Session, user_id: int) -> Dict:
-    """
-    Calculate summary metrics for a user's expenses:
-    - total amount spent
-    - total number of expenses
-    - average expense amount
-    - breakdown by category
-    - top 5 recent expenses
-    """
+    
     expenses = db.query(models.Expense).filter(models.Expense.user_id == user_id).all()
 
     total_amount = sum(e.amount for e in expenses)
