@@ -1,10 +1,16 @@
-# 💰 Personal Expense Tracker
+# <img src="https://api.iconify.design/fa6-solid/wallet.svg?color=%232563EB" width="26" height="26" align="center" /> Personal Expense Tracker
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white)](https://sqlite.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.32%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io)
+[![JWT](https://img.shields.io/badge/Auth-JWT%20Bearer-black?logo=jsonwebtokens&logoColor=white)](https://jwt.io)
 
 A full-stack personal finance and expense tracking application built for **Nolyth Sprint 01: Backend Foundations**. This project demonstrates practical Python engineering, RESTful API architecture with **FastAPI**, relational database persistence with **SQLite** and **SQLAlchemy**, request/response data validation with **Pydantic**, secure authentication via **JWT**, and an interactive frontend built with **Streamlit**.
 
 ---
 
-## 📌 Project Overview
+## <img src="https://api.iconify.design/fa6-solid/circle-info.svg?color=%232563EB" width="20" height="20" align="center" /> Project Overview
 
 Managing personal expenses is a crucial daily task. This application solves the problem by providing a clean, authenticated environment where users can:
 - **Record & Categorize Expenses**: Log daily expenditures with titles, categories, dates, amounts, and custom notes.
@@ -15,7 +21,7 @@ Managing personal expenses is a crucial daily task. This application solves the 
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## <img src="https://api.iconify.design/fa6-solid/layer-group.svg?color=%232563EB" width="20" height="20" align="center" /> Architecture & Tech Stack
 
 | Layer | Technology | Purpose |
 |---|---|---|
@@ -27,7 +33,7 @@ Managing personal expenses is a crucial daily task. This application solves the 
 
 ---
 
-## 📂 Project Structure
+## <img src="https://api.iconify.design/fa6-solid/folder-tree.svg?color=%232563EB" width="20" height="20" align="center" /> Project Structure
 
 ```text
 Sprint_1_Nolyth/
@@ -57,7 +63,7 @@ Sprint_1_Nolyth/
 
 ---
 
-## ⚙️ Setup and Installation
+## <img src="https://api.iconify.design/fa6-solid/gears.svg?color=%232563EB" width="20" height="20" align="center" /> Setup and Installation
 
 ### 1. Prerequisites
 - Python 3.10+ installed on your computer.
@@ -90,7 +96,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 Running the Application
+## <img src="https://api.iconify.design/fa6-solid/play.svg?color=%232563EB" width="20" height="20" align="center" /> Running the Application
 
 This application consists of two services: the **FastAPI Backend** and the **Streamlit Frontend**.
 
@@ -146,7 +152,7 @@ Open a **second terminal window** in the same folder:
 
 ---
 
-## 🔑 User Flow & Features
+## <img src="https://api.iconify.design/fa6-solid/user-check.svg?color=%232563EB" width="20" height="20" align="center" /> User Flow & Features
 
 1. **Register**: Go to the **Create Account** tab, enter a username, email, and password. Form validations verify input lengths and password matching.
 2. **Login**: Enter your credentials in the **Sign In** tab to receive your secure JWT token.
@@ -160,7 +166,7 @@ Open a **second terminal window** in the same folder:
 
 ---
 
-## 🛡️ Input Validation & Form Validations
+## <img src="https://api.iconify.design/fa6-solid/shield-halved.svg?color=%232563EB" width="20" height="20" align="center" /> Input Validation & Form Validations
 
 | Field | Validation Rules | Implemented At |
 |---|---|---|
@@ -174,7 +180,7 @@ Open a **second terminal window** in the same folder:
 
 ---
 
-## 📡 API Endpoints Reference
+## <img src="https://api.iconify.design/fa6-solid/network-wired.svg?color=%232563EB" width="20" height="20" align="center" /> API Endpoints Reference
 
 ### Authentication Endpoints (`/auth`)
 
@@ -198,7 +204,7 @@ Open a **second terminal window** in the same folder:
 
 ---
 
-## 🗄️ Database Schema Design
+## <img src="https://api.iconify.design/fa6-solid/database.svg?color=%232563EB" width="20" height="20" align="center" /> Database Schema Design
 
 The SQLite database (`expenses.db`) implements a clean relational schema using SQLAlchemy ORM:
 
@@ -230,7 +236,7 @@ erDiagram
 
 ---
 
-## 🧪 Running Automated Tests
+## <img src="https://api.iconify.design/fa6-solid/vial-circle-check.svg?color=%232563EB" width="20" height="20" align="center" /> Running Automated Tests
 
 Run the test suite to verify all endpoints, database operations, and validations:
 
@@ -242,7 +248,7 @@ All integration tests run against an in-memory/test database ensuring zero corru
 
 ---
 
-## 💡 Review Q&A Cheat Sheet (For Live Session 02)
+## <img src="https://api.iconify.design/fa6-solid/lightbulb.svg?color=%232563EB" width="20" height="20" align="center" /> Review Q&A Cheat Sheet (For Live Session 02)
 
 1. **Why use FastAPI over standard Flask?**
    - FastAPI natively provides asynchronous request handling, automatic interactive documentation via OpenAPI/Swagger (`/docs`), and built-in Pydantic data validation with clear HTTP status codes.

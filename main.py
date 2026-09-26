@@ -34,21 +34,6 @@ app.include_router(auth_router.router)
 app.include_router(expense_router.router)
 
 
-@app.get("/", tags=["Health"])
-def root():
-    """
-    Health check and welcome endpoint.
-    """
-    return {
-        "status": "online",
-        "message": "Welcome to Personal Expense Tracker API",
-        "documentation": "/docs",
-        "endpoints": {
-            "auth": "/auth",
-            "expenses": "/expenses"
-        }
-    }
-
 
 if __name__ == "__main__":
     # Allows running directly with: python main.py

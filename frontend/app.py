@@ -1,27 +1,28 @@
-"""
-Streamlit Frontend for Personal Expense Tracker.
-Connects to the FastAPI backend REST API.
-Demonstrates forms, validation, tables, metrics, charts, and CRUD interactions.
-"""
+
 
 import streamlit as st
 import requests
 from datetime import date, datetime
 import pandas as pd
 
-# ==========================================
-# Application Configuration & Constants
-# ==========================================
+
 API_BASE_URL = "http://127.0.0.1:8000"
 
 st.set_page_config(
     page_title="Personal Expense Tracker",
-    page_icon="💰",
+    page_icon=":material/account_balance_wallet:",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Categories list fallback if backend is loading
+# Load Font Awesome 6 for professional vector icon styling
+st.markdown(
+    """
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    """,
+    unsafe_allow_html=True
+)
+
 CATEGORIES = [
     "Food & Dining",
     "Transportation",
@@ -35,9 +36,7 @@ CATEGORIES = [
     "Other"
 ]
 
-# ==========================================
-# Session State Initialization
-# ==========================================
+
 if "token" not in st.session_state:
     st.session_state["token"] = None
 if "user" not in st.session_state:
@@ -46,13 +45,7 @@ if "edit_expense_id" not in st.session_state:
     st.session_state["edit_expense_id"] = None
 
 
-# ==========================================
-# Helper: API Request Wrapper
-# ==========================================
 def make_api_request(method: str, endpoint: str, data: dict = None, params: dict = None, auth: bool = True):
-    """
-    Standardized helper to call FastAPI endpoints with proper headers and error handling.
-    """
     url = f"{API_BASE_URL}{endpoint}"
     headers = {}
 
@@ -94,31 +87,29 @@ def make_api_request(method: str, endpoint: str, data: dict = None, params: dict
         return False, f"Unexpected error: {str(e)}"
 
 
-# ==========================================
-# Check Backend Health
-# ==========================================
+
+
 def check_backend_status():
-    """Returns True if FastAPI backend is reachable, otherwise False."""
+
     try:
-        res = requests.get(f"{API_BASE_URL}/", timeout=2)
+        # Check backend reachability via OpenAPI endpoint (no dedicated health route required)
+        res = requests.get(f"{API_BASE_URL}/openapi.json", timeout=2)
         return res.status_code == 200
     except Exception:
         return False
 
 
-# ==========================================
-# Authentication Views (Login & Register)
-# ==========================================
+
 def render_auth_page():
-    st.title("💰 Personal Expense Tracker")
+    st.title(":material/account_balance_wallet: Personal Expense Tracker")
     st.subheader("Manage and monitor your daily finances easily")
 
     # Backend status banner
     backend_live = check_backend_status()
     if not backend_live:
-        st.warning("⚠️ **Backend is offline or unreachable.** Please start the FastAPI server via `uvicorn main:app --reload`.")
+        st.warning("Backend is offline or unreachable. Please start the FastAPI server via `uvicorn main:app --reload`.", icon=":material/wifi_off:")
 
-    tab_login, tab_register = st.tabs(["🔑 Sign In", "📝 Create Account"])
+    tab_login, tab_register = st.tabs([":material/login: Sign In", ":material/person_add: Create Account"])
 
     # --- TAB 1: LOGIN ---
     with tab_login:
@@ -187,7 +178,7 @@ def render_auth_page():
 # Authenticated Views
 # ==========================================
 def render_dashboard():
-    st.header("📊 Spending Overview & Analytics")
+    st.header(":material/insights: Spending Overview & Analytics")
 
     # Fetch summary from backend
     success, summary = make_api_request("GET", "/expenses/summary")
@@ -246,7 +237,7 @@ def render_dashboard():
 
 
 def render_add_expense():
-    st.header("➕ Add New Expense")
+    st.header(":material/add_circle: Add New Expense")
     st.markdown("Fill out the form below to record a new personal expense.")
 
     with st.form("add_expense_form", clear_on_submit=True):
@@ -284,10 +275,10 @@ def render_add_expense():
 
 
 def render_manage_expenses():
-    st.header("📋 View, Filter & Manage Expenses")
+    st.header(":material/receipt_long: View, Filter & Manage Expenses")
 
     # Filter section
-    with st.expander("🔍 Search & Filter Options", expanded=True):
+    with st.expander("Search & Filter Options", expanded=True, icon=":material/search:"):
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             selected_category = st.selectbox("Filter Category", ["All"] + CATEGORIES)
@@ -331,7 +322,7 @@ def render_manage_expenses():
 
     # Edit & Delete Action Panel
     st.markdown("---")
-    st.subheader("⚡ Manage Selected Expense")
+    st.subheader(":material/tune: Manage Selected Expense")
     expense_ids = [e["id"] for e in expenses]
 
     col_select, col_actions = st.columns([1, 2])
@@ -342,7 +333,7 @@ def render_manage_expenses():
     selected_expense = next((e for e in expenses if e["id"] == selected_id), None)
 
     if selected_expense:
-        tab_edit, tab_delete = st.tabs(["✏️ Edit Expense", "🗑️ Delete Expense"])
+        tab_edit, tab_delete = st.tabs([":material/edit: Edit Expense", ":material/delete: Delete Expense"])
 
         # --- EDIT FORM ---
         with tab_edit:
@@ -415,7 +406,7 @@ def main():
 
     # Sidebar
     with st.sidebar:
-        st.markdown("### 💰 Expense Tracker")
+        st.markdown("### :material/account_balance_wallet: Expense Tracker")
         st.write(f"Logged in as: **{username}**")
         if email:
             st.caption(f"Email: {email}")
@@ -423,12 +414,12 @@ def main():
         st.markdown("---")
         menu_selection = st.radio(
             "Navigation",
-            ["📊 Dashboard", "➕ Add Expense", "📋 Manage Expenses"],
+            [":material/dashboard: Dashboard", ":material/add_circle: Add Expense", ":material/receipt_long: Manage Expenses"],
             index=0
         )
 
         st.markdown("---")
-        if st.button("🚪 Sign Out", use_container_width=True):
+        if st.button("Sign Out", icon=":material/logout:", use_container_width=True):
             st.session_state["token"] = None
             st.session_state["user"] = None
             st.rerun()
@@ -438,11 +429,11 @@ def main():
         st.caption("FastAPI • SQLite • Streamlit")
 
     # Render selected view
-    if menu_selection == "📊 Dashboard":
+    if menu_selection == ":material/dashboard: Dashboard":
         render_dashboard()
-    elif menu_selection == "➕ Add Expense":
+    elif menu_selection == ":material/add_circle: Add Expense":
         render_add_expense()
-    elif menu_selection == "📋 Manage Expenses":
+    elif menu_selection == ":material/receipt_long: Manage Expenses":
         render_manage_expenses()
 
 

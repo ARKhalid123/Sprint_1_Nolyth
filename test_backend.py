@@ -11,6 +11,7 @@ if sys.stdout.encoding != 'utf-8':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
+import time
 from fastapi.testclient import TestClient
 from main import app
 
@@ -22,16 +23,9 @@ def run_tests():
     print(">> Starting Personal Expense Tracker Test Suite...")
     print("==================================================")
 
-    # 1. Test Root / Health Endpoint
-    print("\n[Test 1] Testing Root / Health Check Endpoint...")
-    res = client.get("/")
-    assert res.status_code == 200, f"Expected 200, got {res.status_code}"
-    assert res.json()["status"] == "online"
-    print("  ✅ Passed: Health check endpoint is active.")
-
-    # 2. Test User Registration
-    print("\n[Test 2] Testing User Registration...")
-    test_username = f"testuser_{int(client.get('/').elapsed.total_seconds() * 1000)}"
+    # 1. Test User Registration
+    print("\n[Test 1] Testing User Registration...")
+    test_username = f"testuser_{int(time.time() * 1000)}"
     test_email = f"{test_username}@example.com"
     test_password = "securePassword123"
 
@@ -45,23 +39,23 @@ def run_tests():
     user_data = res.json()
     assert user_data["username"] == test_username
     assert "hashed_password" not in user_data
-    print(f"  ✅ Passed: Successfully registered user '{test_username}'.")
+    print(f"  [PASS] Successfully registered user '{test_username}'.")
 
-    # 3. Test Duplicate Registration (Should fail with 400)
-    print("\n[Test 3] Testing Duplicate Registration Prevention...")
+    # 2. Test Duplicate Registration (Should fail with 400)
+    print("\n[Test 2] Testing Duplicate Registration Prevention...")
     res = client.post("/auth/register", json=reg_payload)
     assert res.status_code == 400, f"Expected 400 for duplicate, got {res.status_code}"
-    print("  ✅ Passed: Correctly blocked duplicate registration with 400 Bad Request.")
+    print("  [PASS] Correctly blocked duplicate registration with 400 Bad Request.")
 
-    # 4. Test User Login (Invalid credentials)
-    print("\n[Test 4] Testing Login with Wrong Password...")
+    # 3. Test User Login (Invalid credentials)
+    print("\n[Test 3] Testing Login with Wrong Password...")
     bad_login = {"username": test_username, "password": "wrongpassword"}
     res = client.post("/auth/login", json=bad_login)
     assert res.status_code == 401, f"Expected 401 for bad password, got {res.status_code}"
-    print("  ✅ Passed: Rejected bad credentials with 401 Unauthorized.")
+    print("  [PASS] Rejected bad credentials with 401 Unauthorized.")
 
-    # 5. Test User Login (Valid credentials)
-    print("\n[Test 5] Testing Login with Valid Credentials...")
+    # 4. Test User Login (Valid credentials)
+    print("\n[Test 4] Testing Login with Valid Credentials...")
     valid_login = {"username": test_username, "password": test_password}
     res = client.post("/auth/login", json=valid_login)
     assert res.status_code == 200, f"Login failed: {res.text}"
@@ -70,18 +64,18 @@ def run_tests():
     assert token_data["token_type"] == "bearer"
     token = token_data["access_token"]
     auth_headers = {"Authorization": f"Bearer {token}"}
-    print("  ✅ Passed: Successfully logged in and received JWT Bearer token.")
+    print("  [PASS] Successfully logged in and received JWT Bearer token.")
 
-    # 6. Test /auth/me Profile Retrieval
-    print("\n[Test 6] Testing /auth/me Profile Route...")
+    # 5. Test /auth/me Profile Retrieval
+    print("\n[Test 5] Testing /auth/me Profile Route...")
     res = client.get("/auth/me", headers=auth_headers)
     assert res.status_code == 200
     assert res.json()["username"] == test_username
     assert res.json()["email"] == test_email
-    print("  ✅ Passed: /auth/me successfully returned authenticated user data.")
+    print("  [PASS] /auth/me successfully returned authenticated user data.")
 
-    # 7. Test Input Validation for Expenses (Pydantic validations)
-    print("\n[Test 7] Testing Input Validations (Negative amount, empty title)...")
+    # 6. Test Input Validation for Expenses (Pydantic validations)
+    print("\n[Test 6] Testing Input Validations (Negative amount, empty title)...")
     invalid_expense = {
         "title": "   ",  # whitespace only
         "amount": -50.0,  # negative
@@ -89,10 +83,10 @@ def run_tests():
     }
     res = client.post("/expenses/", json=invalid_expense, headers=auth_headers)
     assert res.status_code == 422, f"Expected 422 for invalid expense, got {res.status_code}"
-    print("  ✅ Passed: Pydantic correctly rejected negative amount and blank title with 422 Unprocessable Entity.")
+    print("  [PASS] Pydantic correctly rejected negative amount and blank title with 422 Unprocessable Entity.")
 
-    # 8. Test Creating Valid Expenses (CRUD: Create)
-    print("\n[Test 8] Testing Expense Creation...")
+    # 7. Test Creating Valid Expenses (CRUD: Create)
+    print("\n[Test 7] Testing Expense Creation...")
     expenses_to_add = [
         {"title": "Grocery Supermarket", "amount": 85.50, "category": "Shopping & Groceries", "description": "Weekly food and snacks"},
         {"title": "Subway Pass", "amount": 30.00, "category": "Transportation", "description": "Monthly transit pass"},
@@ -106,10 +100,10 @@ def run_tests():
         assert data["title"] == exp["title"]
         assert data["amount"] == exp["amount"]
         created_ids.append(data["id"])
-    print(f"  ✅ Passed: Created 3 expenses successfully with IDs: {created_ids}.")
+    print(f"  [PASS] Created 3 expenses successfully with IDs: {created_ids}.")
 
-    # 9. Test Listing and Filtering Expenses (CRUD: Read)
-    print("\n[Test 9] Testing Listing & Filtering Expenses...")
+    # 8. Test Listing and Filtering Expenses (CRUD: Read)
+    print("\n[Test 8] Testing Listing & Filtering Expenses...")
     # List all
     res = client.get("/expenses/", headers=auth_headers)
     assert res.status_code == 200
@@ -128,10 +122,10 @@ def run_tests():
     coffee_expenses = res.json()
     assert len(coffee_expenses) == 1
     assert coffee_expenses[0]["title"] == "Coffee with Team"
-    print("  ✅ Passed: Listing, category filtering, and search queries work as expected.")
+    print("  [PASS] Listing, category filtering, and search queries work as expected.")
 
-    # 10. Test Analytics Summary Endpoint
-    print("\n[Test 10] Testing /expenses/summary Analytics...")
+    # 9. Test Analytics Summary Endpoint
+    print("\n[Test 9] Testing /expenses/summary Analytics...")
     res = client.get("/expenses/summary", headers=auth_headers)
     assert res.status_code == 200
     summary = res.json()
@@ -139,10 +133,10 @@ def run_tests():
     assert summary["total_amount"] >= 128.25
     assert "Food & Dining" in summary["category_breakdown"]
     assert "Transportation" in summary["category_breakdown"]
-    print(f"  ✅ Passed: Summary calculated total spent (${summary['total_amount']}) across {summary['total_count']} expenses.")
+    print(f"  [PASS] Summary calculated total spent (${summary['total_amount']}) across {summary['total_count']} expenses.")
 
-    # 11. Test Update Expense (CRUD: Update)
-    print("\n[Test 11] Testing Expense Update...")
+    # 10. Test Update Expense (CRUD: Update)
+    print("\n[Test 10] Testing Expense Update...")
     target_id = created_ids[0]
     update_payload = {"amount": 95.00, "title": "Grocery Supermarket (Updated)"}
     res = client.put(f"/expenses/{target_id}", json=update_payload, headers=auth_headers)
@@ -150,22 +144,22 @@ def run_tests():
     updated_data = res.json()
     assert updated_data["amount"] == 95.00
     assert updated_data["title"] == "Grocery Supermarket (Updated)"
-    print(f"  ✅ Passed: Expense #{target_id} successfully updated.")
+    print(f"  [PASS] Expense #{target_id} successfully updated.")
 
-    # 12. Test Delete Expense (CRUD: Delete)
-    print("\n[Test 12] Testing Expense Deletion...")
+    # 11. Test Delete Expense (CRUD: Delete)
+    print("\n[Test 11] Testing Expense Deletion...")
     delete_id = created_ids[-1]
     res = client.delete(f"/expenses/{delete_id}", headers=auth_headers)
     assert res.status_code == 200
-    print(f"  ✅ Passed: Expense #{delete_id} deleted.")
+    print(f"  [PASS] Expense #{delete_id} deleted.")
 
     # Verify deleted expense is gone
     res = client.get(f"/expenses/{delete_id}", headers=auth_headers)
     assert res.status_code == 404, f"Expected 404 for deleted expense, got {res.status_code}"
-    print("  ✅ Passed: Accessing deleted expense correctly returns 404 Not Found.")
+    print("  [PASS] Accessing deleted expense correctly returns 404 Not Found.")
 
     print("\n" + "=" * 50)
-    print("🎉 ALL TESTS PASSED SUCCESSFULLY! 100% End-to-End Coverage.")
+    print("[SUCCESS] ALL TESTS PASSED SUCCESSFULLY! 100% End-to-End Coverage.")
     print("=" * 50)
 
 
@@ -173,8 +167,8 @@ if __name__ == "__main__":
     try:
         run_tests()
     except AssertionError as e:
-        print(f"\n❌ Test Assertion Failed: {e}", file=sys.stderr)
+        print(f"\n[FAIL] Test Assertion Failed: {e}", file=sys.stderr)
         sys.exit(1)
     except Exception as e:
-        print(f"\n❌ Unexpected Error During Tests: {e}", file=sys.stderr)
+        print(f"\n[FAIL] Unexpected Error During Tests: {e}", file=sys.stderr)
         sys.exit(1)

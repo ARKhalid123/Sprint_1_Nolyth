@@ -1,16 +1,10 @@
-"""
-Pydantic schemas for request and response validation.
-Ensures strong typing, input sanitation, and automated documentation.
-"""
+
 
 from datetime import date as dt_date, datetime as dt_datetime
 from typing import Optional, Dict, List
 from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
 
 
-# ==========================================
-# User Schemas
-# ==========================================
 
 class UserBase(BaseModel):
     username: str = Field(..., min_length=3, max_length=50, description="Unique username")
@@ -49,9 +43,7 @@ class TokenData(BaseModel):
     username: Optional[str] = None
 
 
-# ==========================================
 # Expense Schemas
-# ==========================================
 
 ALLOWED_CATEGORIES = [
     "Food & Dining",
