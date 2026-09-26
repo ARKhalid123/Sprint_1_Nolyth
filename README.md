@@ -236,23 +236,4 @@ erDiagram
 
 ---
 
-## <img src="https://api.iconify.design/fa6-solid/vial-circle-check.svg?color=%232563EB" width="20" height="20" align="center" /> Running Automated Tests
 
-Run the test suite to verify all endpoints, database operations, and validations:
-
-```bash
-python test_backend.py
-```
-
-All integration tests run against an in-memory/test database ensuring zero corruption of your production data.
-
----
-
-## <img src="https://api.iconify.design/fa6-solid/lightbulb.svg?color=%232563EB" width="20" height="20" align="center" /> Review Q&A Cheat Sheet (For Live Session 02)
-
-1. **Why use FastAPI over standard Flask?**
-   - FastAPI natively provides asynchronous request handling, automatic interactive documentation via OpenAPI/Swagger (`/docs`), and built-in Pydantic data validation with clear HTTP status codes.
-2. **How does authentication work?**
-   - When a user logs in with their username and password, the password is verified against a PBKDF2-HMAC-SHA256 salted hash. Upon verification, the server generates a signed JSON Web Token (JWT) with an expiration timestamp. The frontend stores this token in session state and sends it in the `Authorization: Bearer <token>` header on subsequent requests.
-3. **Why separate routers, models, schemas, and crud?**
-   - Separation of concerns: `models.py` defines database tables, `schemas.py` validates incoming and outgoing HTTP data, `crud.py` isolates SQL queries, and `routers/` handle HTTP route definitions and status codes. This keeps the code modular, readable, and easy to maintain.
