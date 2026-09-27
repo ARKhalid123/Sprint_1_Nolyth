@@ -4,6 +4,19 @@ import streamlit as st
 import requests
 from datetime import date, datetime
 import pandas as pd
+import threading
+import uvicorn
+from main import app as fastapi_app
+
+def start_backend():
+    
+    uvicorn.run(fastapi_app, host="127.0.0.1", port=8000, log_level="warning")
+
+# agar server pehle se nahi chal raha to background mein start kar do
+if not check_backend_status():
+    backend_thread = threading.Thread(target=start_backend, daemon=True)
+    backend_thread.start()
+
 
 
 API_BASE_URL = "http://127.0.0.1:8000"
