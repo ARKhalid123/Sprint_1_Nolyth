@@ -1,25 +1,50 @@
-
-
-import streamlit as st
-import requests
-from datetime import date, datetime
-import pandas as pd
+import sys
+import os
+import time
 import threading
+from datetime import date, datetime
+import requests
+import pandas as pd
+import streamlit as st
 import uvicorn
-from main import app as fastapi_app
 
-def start_backend():
-    
-    uvicorn.run(fastapi_app, host="127.0.0.1", port=8000, log_level="warning")
+# Ensure repository root is on sys.path so 'main' and 'backend' import properly on Streamlit Cloud
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
-# agar server pehle se nahi chal raha to background mein start kar do
-if not check_backend_status():
-    backend_thread = threading.Thread(target=start_backend, daemon=True)
-    backend_thread.start()
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
 
 
+def check_backend_status():
+    try:
+        res = requests.get(f"{API_BASE_URL}/openapi.json", timeout=2)
+        return res.status_code == 200
+    except Exception:
+        return False
 
-API_BASE_URL = "http://127.0.0.1:8000"
+
+# Singleton background runner for FastAPI on Streamlit Cloud (executes exactly once)
+@st.cache_resource
+def ensure_backend_running():
+    if not check_backend_status() and "127.0.0.1" in API_BASE_URL:
+        from main import app as fastapi_app
+
+        def run_server():
+            uvicorn.run(fastapi_app, host="127.0.0.1", port=8000, log_level="warning")
+
+        backend_thread = threading.Thread(target=run_server, daemon=True)
+        backend_thread.start()
+
+        # Wait up to 3 seconds for server to start responding
+        for _ in range(10):
+            time.sleep(0.3)
+            if check_backend_status():
+                break
+    return True
+
+
+ensure_backend_running()
 
 st.set_page_config(
     page_title="Personal Expense Tracker",
@@ -99,17 +124,6 @@ def make_api_request(method: str, endpoint: str, data: dict = None, params: dict
     except Exception as e:
         return False, f"Unexpected error: {str(e)}"
 
-
-
-
-def check_backend_status():
-
-    try:
-        # Check backend reachability via OpenAPI endpoint (no dedicated health route required)
-        res = requests.get(f"{API_BASE_URL}/openapi.json", timeout=2)
-        return res.status_code == 200
-    except Exception:
-        return False
 
 
 
