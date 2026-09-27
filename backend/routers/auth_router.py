@@ -1,6 +1,4 @@
-"""
-Authentication router: handles user registration, login, and current user retrieval.
-"""
+
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -15,10 +13,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 @router.post("/register", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    """
-    Register a new user account.
-    Validates that the username and email are not already registered.
-    """
+
     # Check if username already exists
     existing_username = crud.get_user_by_username(db, username=user.username)
     if existing_username:
@@ -42,10 +37,6 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=schemas.Token)
 def login_user(login_data: schemas.UserLogin, db: Session = Depends(get_db)):
-    """
-    Authenticate a user with username/email and password.
-    Returns a JWT access token upon successful authentication.
-    """
     # Search by username first, if not found search by email
     user = crud.get_user_by_username(db, username=login_data.username)
     if not user:
@@ -65,8 +56,4 @@ def login_user(login_data: schemas.UserLogin, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=schemas.UserResponse)
 def read_current_user_profile(current_user: User = Depends(get_current_user)):
-    """
-    Get the profile of the currently logged-in user.
-    Requires Bearer token authentication.
-    """
     return current_user

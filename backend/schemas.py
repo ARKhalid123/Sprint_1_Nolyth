@@ -12,7 +12,7 @@ class UserBase(BaseModel):
 
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=6, description="Password with at least 6 characters")
+    password: str = Field(..., min_length=8, description="Password with at least 8 characters")
 
     @field_validator("username")
     def validate_username(cls, v: str) -> str:

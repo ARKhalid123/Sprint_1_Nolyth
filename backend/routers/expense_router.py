@@ -1,9 +1,3 @@
-"""
-Expense router: handles CRUD endpoints for personal expenses
-as well as filtering, search, and analytics summary.
-All endpoints require JWT Bearer token authentication.
-"""
-
 from typing import List, Optional
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -23,10 +17,6 @@ def create_new_expense(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Create a new expense entry for the current authenticated user.
-    Pydantic automatically validates amount > 0 and non-empty title.
-    """
     return crud.create_expense(db=db, expense=expense, user_id=current_user.id)
 
 
@@ -41,10 +31,6 @@ def list_expenses(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Retrieve all expenses for the authenticated user.
-    Supports filtering by category, date range, search query, and pagination.
-    """
     expenses = crud.get_expenses(
         db=db,
         user_id=current_user.id,
@@ -63,18 +49,11 @@ def get_expenses_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Get aggregated summary statistics for the user's spending:
-    total spent, total count, average transaction, category breakdown, and recent expenses.
-    """
     return crud.get_expense_summary(db=db, user_id=current_user.id)
 
 
 @router.get("/categories/list", response_model=List[str])
 def get_categories():
-    """
-    Return the standard list of expense categories.
-    """
     return schemas.ALLOWED_CATEGORIES
 
 
@@ -84,10 +63,6 @@ def get_single_expense(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Get details of a specific expense by ID.
-    Only allows access if the expense belongs to the current user.
-    """
     expense = crud.get_expense_by_id(db=db, expense_id=expense_id, user_id=current_user.id)
     if not expense:
         raise HTTPException(
@@ -104,10 +79,6 @@ def update_existing_expense(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Update an existing expense by ID.
-    Can update one or more fields (title, amount, category, date, description).
-    """
     updated_expense = crud.update_expense(
         db=db,
         expense_id=expense_id,
@@ -128,9 +99,6 @@ def delete_existing_expense(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """
-    Delete an expense entry by ID.
-    """
     success = crud.delete_expense(db=db, expense_id=expense_id, user_id=current_user.id)
     if not success:
         raise HTTPException(

@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Load Font Awesome 6 for professional vector icon styling
+# Load Font Awesome
 st.markdown(
     """
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -115,7 +115,7 @@ def render_auth_page():
     with tab_login:
         st.markdown("### Welcome Back")
         with st.form("login_form", clear_on_submit=False):
-            username_input = st.text_input("Username or Email", placeholder="e.g. john_doe").strip()
+            username_input = st.text_input("Username or Email", placeholder="e.g. abdul_rehman").strip()
             password_input = st.text_input("Password", type="password", placeholder="Enter your password").strip()
             submit_login = st.form_submit_button("Sign In", use_container_width=True)
 
@@ -146,7 +146,7 @@ def render_auth_page():
         with st.form("register_form", clear_on_submit=True):
             reg_username = st.text_input("Choose Username", placeholder="At least 3 characters").strip()
             reg_email = st.text_input("Email Address", placeholder="name@example.com").strip()
-            reg_password = st.text_input("Password", type="password", placeholder="At least 6 characters").strip()
+            reg_password = st.text_input("Password", type="password", placeholder="At least 8 characters").strip()
             reg_confirm_password = st.text_input("Confirm Password", type="password", placeholder="Re-enter password").strip()
             submit_register = st.form_submit_button("Create Account", use_container_width=True)
 
@@ -156,8 +156,8 @@ def render_auth_page():
                     st.error("Username must be at least 3 characters long.")
                 elif "@" not in reg_email or "." not in reg_email:
                     st.error("Please enter a valid email address.")
-                elif len(reg_password) < 6:
-                    st.error("Password must be at least 6 characters long.")
+                elif len(reg_password) < 8:
+                    st.error("Password must be at least 8 characters long.")
                 elif reg_password != reg_confirm_password:
                     st.error("Passwords do not match. Please re-enter carefully.")
                 else:
@@ -174,9 +174,7 @@ def render_auth_page():
                         st.error(f"Registration failed: {result}")
 
 
-# ==========================================
-# Authenticated Views
-# ==========================================
+
 def render_dashboard():
     st.header(":material/insights: Spending Overview & Analytics")
 
@@ -390,9 +388,9 @@ def render_manage_expenses():
                     st.error(f"Failed to delete expense: {del_res}")
 
 
-# ==========================================
+
 # Main App Router
-# ==========================================
+
 def main():
     # If user is not authenticated, show login/register
     if not st.session_state["token"]:

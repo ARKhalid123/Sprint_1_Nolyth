@@ -14,7 +14,7 @@ from backend import models
 
 SECRET_KEY = "nolyth_sprint_secret_key_change_in_production"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 Day
 
 security = HTTPBearer()
 
