@@ -107,7 +107,14 @@ def make_api_request(method: str, endpoint: str, data: dict = None, params: dict
         elif response.status_code == 401:
             st.session_state["token"] = None
             st.session_state["user"] = None
-            return False, "Session expired. Please log in again."
+            if auth:
+                return False, "Session expired. Please log in again."
+            else:
+                try:
+                    error_detail = response.json().get("detail", "Incorrect username or password.")
+                    return False, str(error_detail)
+                except Exception:
+                    return False, "Incorrect username or password."
         else:
             try:
                 error_detail = response.json().get("detail", response.text)
