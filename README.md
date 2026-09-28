@@ -73,7 +73,7 @@ Sprint_1_Nolyth/
 
 ```bash
 # Clone the repository
-git clone <your-github-repo-url>
+git clone https://github.com/ARKhalid123/Sprint_1_Nolyth.git
 cd Sprint_1_Nolyth
 
 # Create a virtual environment
