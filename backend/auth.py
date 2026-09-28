@@ -12,9 +12,9 @@ from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend import models
 
-SECRET_KEY = os.getenv("SECRET_KEY", "nolyth_sprint_secret_key_change_in_production")
+SECRET_KEY = "nolyth_sprint_secret_key_change_in_production"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60 * 24 * 7))  # 7 Days
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 Day
 
 security = HTTPBearer()
 
