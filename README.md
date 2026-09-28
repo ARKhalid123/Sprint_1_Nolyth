@@ -1,94 +1,167 @@
-# <img src="https://api.iconify.design/fa6-solid/wallet.svg?color=%232563EB" width="26" height="26" align="center" /> Personal Expense Tracker
+# <img src="https://api.iconify.design/fa6-solid/wallet.svg?color=%232563EB" width="28" height="28" align="center" /> Personal Expense Tracker
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=white)](https://sqlite.org)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0%2B-D71F00?logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.32%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io)
+[![Pydantic](https://img.shields.io/badge/Pydantic-v2-E92063?logo=pydantic&logoColor=white)](https://docs.pydantic.dev/)
 [![JWT](https://img.shields.io/badge/Auth-JWT%20Bearer-black?logo=jsonwebtokens&logoColor=white)](https://jwt.io)
 
-A full-stack personal finance and expense tracking application built for **Nolyth Sprint 01: Backend Foundations**. This project demonstrates practical Python engineering, RESTful API architecture with **FastAPI**, relational database persistence with **SQLite** and **SQLAlchemy**, request/response data validation with **Pydantic**, secure authentication via **JWT**, and an interactive frontend built with **Streamlit**.
+> **Submission for Nolyth Sprint 01: Backend Foundations**  
+> A full-stack, authenticated personal expense tracking application featuring a high-performance **FastAPI** REST backend, **SQLite** & **SQLAlchemy** ORM persistence, strict **Pydantic v2** validation, and an interactive **Streamlit** dashboard.
 
 ---
 
-## <img src="https://api.iconify.design/fa6-solid/circle-info.svg?color=%232563EB" width="20" height="20" align="center" /> Project Overview
+## 🌐 Live Application (Cloud Demo)
 
-Managing personal expenses is a crucial daily task. This application solves the problem by providing a clean, authenticated environment where users can:
-- **Record & Categorize Expenses**: Log daily expenditures with titles, categories, dates, amounts, and custom notes.
-- **Filter & Search**: Quickly find transactions using category filters, date ranges, or keyword searches.
-- **Analyze Spending**: View KPI metrics (Total Spent, Transaction Counts, Average Cost, Top Category) and visual spending distributions.
-- **Manage Entries (CRUD)**: Update existing expenses or delete entries with immediate database persistence.
-- **Multi-User Security**: Keep user data completely isolated using JWT token-based authentication.
+The project is hosted and ready to test live on Streamlit Community Cloud:
+
+👉 **[Launch Live Streamlit Web App](https://sprint1nolyth.streamlit.app/)** *(or open the direct Streamlit deployment URL provided in the submission)*
+
+> [!TIP]
+> **No setup required for instant evaluation!** The cloud deployment features an embedded backend runner, allowing reviewers to test user registration, JWT login, expense entry, filtering, and analytics directly from any modern web browser.
 
 ---
 
-## <img src="https://api.iconify.design/fa6-solid/layer-group.svg?color=%232563EB" width="20" height="20" align="center" /> Architecture & Tech Stack
+## 📋 Table of Contents
 
-| Layer | Technology | Purpose |
+- [Project Overview & Key Features](#-project-overview--key-features)
+- [Architecture & Tech Stack](#-architecture--tech-stack)
+- [Repository Structure](#-repository-structure)
+- [Local Setup & Installation](#-local-setup--installation)
+- [How to Run Locally](#-how-to-run-locally)
+  - [Method 1: One-Command Quick Run (Recommended)](#method-1-one-command-quick-run-recommended-for-reviewers)
+  - [Method 2: Standard Dual-Terminal Run (Full Developer Mode)](#method-2-standard-dual-terminal-run-full-developer-mode)
+- [2-Minute Quick Evaluation Walkthrough](#-2-minute-quick-evaluation-walkthrough)
+- [API Endpoints Reference](#-api-endpoints-reference)
+- [Data Validation & Security](#-data-validation--security)
+- [Database Schema Design](#-database-schema-design)
+- [Troubleshooting & FAQs](#-troubleshooting--faqs)
+
+---
+
+## 💡 Project Overview & Key Features
+
+Personal financial tracking is a vital daily utility. This project provides a production-grade full-stack solution with clear separation of concerns, robust security, and an intuitive user experience:
+
+- 🔐 **Multi-User Security & JWT Authentication**: User accounts with PBKDF2-HMAC password hashing. Stateless JWT bearer tokens isolate all financial data strictly per user.
+- 💳 **Full Expense Lifecycle (CRUD)**: Log daily expenses with titles, amounts, predefined categories, transaction dates, and custom notes. Real-time update and deletion with immediate database reflection.
+- 📊 **Dynamic Analytics Dashboard**: Interactive KPI metrics (Total Spent, Total Transactions, Average Spend, Top Category), category distribution bar charts, and recent transaction feeds.
+- 🔍 **Multi-Parametric Search & Filtering**: Instant querying by expense category, date ranges (from/to), and keyword search matching titles or notes.
+- 🛡️ **Comprehensive Dual-Layer Validation**: Strict frontend validation coupled with backend Pydantic v2 schema enforcement (positive amounts, valid emails, non-empty whitespace-sanitized strings).
+- 📖 **Interactive Swagger & OpenAPI Documentation**: Self-documenting API endpoints accessible out of the box at `/docs` and `/redoc`.
+
+---
+
+## 🏛️ Architecture & Tech Stack
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                   Streamlit Web Frontend                    │
+│   • Reactive Dashboard UI      • Auth Forms (Login/Register)│
+│   • KPI Metrics & Bar Charts   • Expense Management Forms   │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ HTTP / JSON (Bearer Token)
+┌──────────────────────────────▼──────────────────────────────┐
+│                    FastAPI REST Backend                     │
+│   • Modular APIRouter          • Dependency Injection (Auth)│
+│   • Pydantic v2 Serialization  • OpenAPI / Swagger Docs     │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ SQLAlchemy 2.0 ORM
+┌──────────────────────────────▼──────────────────────────────┐
+│                   SQLite Relational DB                      │
+│   • User Accounts              • Expense Records            │
+│   • Foreign Key Cascade        • Multi-Tenant Isolation     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+| Layer | Technology | Key Responsibility |
 |---|---|---|
-| **Backend API** | [FastAPI](https://fastapi.tiangolo.com/) | High-performance RESTful API endpoints, dependency injection, and automatic OpenAPI docs. |
-| **Data Validation** | [Pydantic v2](https://docs.pydantic.dev/) | Strict request payload validation, type hints, and response serialization. |
-| **Database & ORM** | [SQLite](https://www.sqlite.org/) + [SQLAlchemy](https://www.sqlalchemy.org/) | Relational database persistence, connection pooling, and ORM model mapping. |
-| **Authentication** | [PyJWT](https://pyjwt.readthedocs.io/) + PBKDF2 Hashing | Secure password salting/hashing and Bearer token session authentication. |
-| **Frontend UI** | [Streamlit](https://streamlit.io/) + [Pandas](https://pandas.pydata.org/) | User-friendly dashboard with forms, data tables, metrics, and charts. |
+| **Backend API** | [FastAPI](https://fastapi.tiangolo.com/) | High-speed RESTful API, async request handling, modular routers, and auto OpenAPI docs. |
+| **Data Validation** | [Pydantic v2](https://docs.pydantic.dev/) | Strict request payload validation, type coercion, field validators, and response schemas. |
+| **Database & ORM** | [SQLite](https://www.sqlite.org/) + [SQLAlchemy](https://www.sqlalchemy.org/) | Relational persistence, connection pooling, model definitions, and declarative queries. |
+| **Authentication** | [PyJWT](https://pyjwt.readthedocs.io/) + PBKDF2 | SHA-256 password salting/hashing and stateless Bearer token authentication. |
+| **Frontend UI** | [Streamlit](https://streamlit.io/) + [Pandas](https://pandas.pydata.org/) | User-friendly dashboard with reactive state, dataframes, forms, and charts. |
 
 ---
 
-## <img src="https://api.iconify.design/fa6-solid/folder-tree.svg?color=%232563EB" width="20" height="20" align="center" /> Project Structure
+## 📂 Repository Structure
 
 ```text
 Sprint_1_Nolyth/
-│
 ├── backend/                        # Backend Application Package
 │   ├── __init__.py
 │   ├── database.py                 # SQLite engine, SessionLocal, and DB dependency
 │   ├── models.py                   # SQLAlchemy ORM models (User, Expense)
-│   ├── schemas.py                  # Pydantic schemas for request/response validation
+│   ├── schemas.py                  # Pydantic v2 schemas for request/response validation
 │   ├── auth.py                     # Password hashing, JWT token creation & verification
 │   ├── crud.py                     # Database query helper functions (CRUD logic)
 │   └── routers/
 │       ├── __init__.py
 │       ├── auth_router.py          # /auth/register, /auth/login, /auth/me
-│       └── expense_router.py       # /expenses CRUD, search, filter, and summary
+│       └── expense_router.py       # /expenses CRUD, search, filter, and analytics summary
 │
 ├── frontend/                       # Frontend Application Package
 │   ├── __init__.py
 │   └── app.py                      # Streamlit UI with multi-view navigation & charts
 │
-├── test_backend.py                 # Automated end-to-end integration tests
-├── main.py                         # FastAPI application entry point
+├── .devcontainer/                  # VS Code Dev Container / Codespaces config
+│   └── devcontainer.json
+├── main.py                         # FastAPI application entry point & CORS configuration
 ├── requirements.txt                # Python project dependencies
-├── expenses.db                     # SQLite database file (auto-generated)
+├── expenses.db                     # SQLite database file (auto-generated on startup)
 └── README.md                       # Complete project documentation and guide
 ```
 
 ---
 
-## <img src="https://api.iconify.design/fa6-solid/gears.svg?color=%232563EB" width="20" height="20" align="center" /> Setup and Installation
+## ⚙️ Local Setup & Installation
+
+Follow these steps to run the complete application locally on your machine.
 
 ### 1. Prerequisites
-- Python 3.10+ installed on your computer.
-- Git installed.
+- **Python 3.10+** installed on your system ([python.org](https://www.python.org/downloads/)).
+- **Git** installed ([git-scm.com](https://git-scm.com/)).
 
-### 2. Clone Repository & Setup Virtual Environment
+### 2. Clone the Repository
 
 ```bash
-# Clone the repository
-git clone <your-github-repo-url>
+git clone https://github.com/ARKhalid123/Sprint_1_Nolyth.git
 cd Sprint_1_Nolyth
-
-# Create a virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-# On Windows (PowerShell):
-.\.venv\Scripts\Activate.ps1
-# On Windows (Command Prompt):
-.\.venv\Scripts\activate.bat
-# On macOS / Linux:
-source .venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### 3. Create a Virtual Environment
+
+It is recommended to use an isolated Python virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+### 4. Activate the Virtual Environment
+
+Choose the command matching your operating system and shell:
+
+- **Windows (PowerShell):**
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  ```
+  *(If you get a script execution policy error, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first).*
+
+- **Windows (Command Prompt `cmd`):**
+  ```cmd
+  .\.venv\Scripts\activate.bat
+  ```
+
+- **macOS / Linux:**
+  ```bash
+  source .venv/bin/activate
+  ```
+
+### 5. Install Dependencies
+
+Install all required packages via `pip`:
 
 ```bash
 pip install -r requirements.txt
@@ -96,144 +169,220 @@ pip install -r requirements.txt
 
 ---
 
-## <img src="https://api.iconify.design/fa6-solid/play.svg?color=%232563EB" width="20" height="20" align="center" /> Running the Application
+## 🚀 How to Run Locally
 
-This application consists of two services: the **FastAPI Backend** and the **Streamlit Frontend**.
+You can run the application locally using either of the two methods below:
 
-### Step 1: Start the FastAPI Backend
+### Method 1: One-Command Quick Run (Recommended for Reviewers)
 
-Open your **first terminal** in the project directory:
+> [!NOTE]
+> The Streamlit frontend includes an intelligent background runner (`ensure_backend_running`) that automatically boots the FastAPI backend on port `8000` if it is not already running!
 
-**Option A (Activate venv first):**
-- In Command Prompt (`cmd`):
-  ```cmd
-  .venv\Scripts\activate.bat
-  uvicorn main:app --reload
-  ```
-- In PowerShell:
-  ```powershell
-  .\.venv\Scripts\Activate.ps1
-  uvicorn main:app --reload
-  ```
+Run a single command in your terminal:
 
-**Option B (Run directly without activating):**
-```cmd
-.\.venv\Scripts\python.exe main.py
+```bash
+streamlit run frontend/app.py
 ```
 
-- API Base URL: **`http://127.0.0.1:8000`**
-- Interactive Swagger Docs: **`http://127.0.0.1:8000/docs`**
+- **Streamlit Web Dashboard:** Open **`http://localhost:8501`** in your browser.
+- **FastAPI Backend:** Runs simultaneously at **`http://127.0.0.1:8000`**.
+- **Interactive Swagger Docs:** Accessible at **`http://127.0.0.1:8000/docs`**.
 
 ---
 
-### Step 2: Start the Streamlit Frontend
+### Method 2: Standard Dual-Terminal Run (Full Developer Mode)
 
-Open a **second terminal window** in the same folder:
+For granular control, live hot-reloading, or debugging backend logs, you can run the backend and frontend in separate terminals:
 
-**Option A (Activate venv first):**
-- In Command Prompt (`cmd`):
-  ```cmd
-  .venv\Scripts\activate.bat
-  streamlit run frontend/app.py
-  ```
-- In PowerShell:
-  ```powershell
-  .\.venv\Scripts\Activate.ps1
-  streamlit run frontend/app.py
-  ```
+#### Terminal 1 — Start the FastAPI Backend:
 
-**Option B (Run directly using the virtual environment):**
-```cmd
-.\.venv\Scripts\python.exe -m streamlit run frontend/app.py
+```bash
+# Make sure your virtual environment is activated
+uvicorn main:app --reload
 ```
-*(or `.\.venv\Scripts\streamlit.exe run frontend/app.py`)*
+*Or run directly:*
+```bash
+python main.py
+```
 
-- Streamlit will open your browser at: **`http://localhost:8501`**
+- **API Base URL:** `http://127.0.0.1:8000`
+- **Interactive Swagger Docs:** `http://127.0.0.1:8000/docs`
+- **ReDoc Documentation:** `http://127.0.0.1:8000/redoc`
 
----
+#### Terminal 2 — Start the Streamlit Frontend:
 
-## <img src="https://api.iconify.design/fa6-solid/user-check.svg?color=%232563EB" width="20" height="20" align="center" /> User Flow & Features
+Open a new terminal, activate `.venv`, and run:
 
-1. **Register**: Go to the **Create Account** tab, enter a username, email, and password. Form validations verify input lengths and password matching.
-2. **Login**: Enter your credentials in the **Sign In** tab to receive your secure JWT token.
-3. **Dashboard**: View summary KPI metrics (Total Spent, Total Transactions, Average Transaction, Top Category) and breakdown charts.
-4. **Add Expense**: Fill out the form with a Title, Amount (strictly > $0), Category, Date, and optional Notes.
-5. **Manage Expenses**:
-   - Filter by Category (Food & Dining, Transportation, Shopping, etc.).
-   - Filter by Date Range (From Date -> To Date).
-   - Search by keyword in Title or Notes.
-   - Select any expense ID to **Edit** its details or **Delete** it permanently.
+```bash
+streamlit run frontend/app.py
+```
 
----
-
-## <img src="https://api.iconify.design/fa6-solid/shield-halved.svg?color=%232563EB" width="20" height="20" align="center" /> Input Validation & Form Validations
-
-| Field | Validation Rules | Implemented At |
-|---|---|---|
-| **Username** | Minimum 3 non-whitespace characters, unique across all users | Frontend & Pydantic Schema |
-| **Email** | Valid email structure (`user@domain.com`), unique in database | Frontend & Pydantic `EmailStr` |
-| **Password** | Minimum 6 characters, confirmation matching | Frontend Form & Backend Auth |
-| **Expense Title** | Non-empty, 1-100 characters, whitespace stripped | Frontend & Pydantic `@field_validator` |
-| **Expense Amount** | Positive float (`gt=0`), minimum $0.01 | Frontend input & Pydantic `Field(..., gt=0)` |
-| **Expense Date** | Valid ISO Date (`YYYY-MM-DD`) | Streamlit date picker & Pydantic `date` |
-| **Expense Category** | Non-empty, chosen from standard categories | Frontend Selectbox & Pydantic validator |
+- **Frontend Dashboard:** Opens automatically at **`http://localhost:8501`**.
 
 ---
 
-## <img src="https://api.iconify.design/fa6-solid/network-wired.svg?color=%232563EB" width="20" height="20" align="center" /> API Endpoints Reference
+## ⏱️ 2-Minute Quick Evaluation Walkthrough
+
+Follow this quick guide to test the end-to-end functionality:
+
+1. **Create an Account**:
+   - Navigate to the **Create Account** tab.
+   - Enter a username (`evaluator`), email (`evaluator@test.com`), and a password (minimum 8 characters).
+   - Click **Create Account** to register.
+2. **Sign In**:
+   - Switch to the **Sign In** tab, enter your credentials, and click **Sign In**.
+   - Your session will authenticate and store your JWT access token.
+3. **Log Expenses**:
+   - Go to the **Add Expense** page from the sidebar.
+   - Enter a title (e.g. `Office Supplies`), amount (`45.50`), choose a category (e.g. `Shopping & Groceries`), pick a date, and add notes.
+   - Click **Save Expense** and verify the success notification.
+4. **Inspect Analytics & Charts**:
+   - Navigate to the **Dashboard** in the sidebar.
+   - View updated KPI cards: Total Spent, Total Transactions, Average Transaction, and Top Category.
+   - Examine the dynamic Category Distribution chart and recent expense log table.
+5. **Filter, Search & Manage (CRUD)**:
+   - Go to **Manage Expenses** in the sidebar.
+   - Test filtering by **Category**, **Date Range**, or **Keyword Search**.
+   - Select an expense by its ID from the dropdown to **Edit** (modify title/amount) or **Delete** the entry.
+6. **Inspect Interactive API Docs**:
+   - Open **`http://127.0.0.1:8000/docs`** in your browser.
+   - Explore and execute any endpoint using Swagger UI's "Try it out" feature.
+
+---
+
+## 🔌 API Endpoints Reference
 
 ### Authentication Endpoints (`/auth`)
 
 | Method | Endpoint | Description | Auth Required | Status Code |
-|---|---|---|:---:|:---:|
-| `POST` | `/auth/register` | Create a new user account | No | `201 Created` |
-| `POST` | `/auth/login` | Authenticate user and receive JWT access token | No | `200 OK` |
-| `GET` | `/auth/me` | Fetch currently logged-in user profile | **Yes (Bearer)** | `200 OK` |
+|:---:|---|---|:---:|:---:|
+| `POST` | `/auth/register` | Register a new user account | No | `201 Created` |
+| `POST` | `/auth/login` | Authenticate with credentials and receive JWT access token | No | `200 OK` |
+| `GET` | `/auth/me` | Fetch authenticated user profile | **Yes (Bearer)** | `200 OK` |
 
 ### Expense Management Endpoints (`/expenses`)
 
 | Method | Endpoint | Description | Auth Required | Status Code |
-|---|---|---|:---:|:---:|
-| `POST` | `/expenses/` | Create a new expense | **Yes (Bearer)** | `201 Created` |
-| `GET` | `/expenses/` | List expenses (with category, date, search filters) | **Yes (Bearer)** | `200 OK` |
-| `GET` | `/expenses/summary` | Aggregated analytics & category breakdown | **Yes (Bearer)** | `200 OK` |
-| `GET` | `/expenses/categories/list` | Get list of predefined categories | No | `200 OK` |
-| `GET` | `/expenses/{id}` | Get details of a single expense by ID | **Yes (Bearer)** | `200 OK` |
-| `PUT` | `/expenses/{id}` | Update an existing expense by ID | **Yes (Bearer)** | `200 OK` |
-| `DELETE` | `/expenses/{id}` | Delete an expense by ID | **Yes (Bearer)** | `200 OK` |
+|:---:|---|---|:---:|:---:|
+| `POST` | `/expenses/` | Create a new expense record | **Yes (Bearer)** | `201 Created` |
+| `GET` | `/expenses/` | List expenses (with category, date range, search filters) | **Yes (Bearer)** | `200 OK` |
+| `GET` | `/expenses/summary` | Fetch spending analytics KPIs and category breakdown | **Yes (Bearer)** | `200 OK` |
+| `GET` | `/expenses/categories/list` | Fetch predefined expense category list | No | `200 OK` |
+| `GET` | `/expenses/{id}` | Retrieve details of an expense by ID | **Yes (Bearer)** | `200 OK` |
+| `PUT` | `/expenses/{id}` | Update an existing expense record by ID | **Yes (Bearer)** | `200 OK` |
+| `DELETE` | `/expenses/{id}` | Delete an expense record by ID | **Yes (Bearer)** | `200 OK` |
 
 ---
 
-## <img src="https://api.iconify.design/fa6-solid/database.svg?color=%232563EB" width="20" height="20" align="center" /> Database Schema Design
+## 🛡️ Data Validation & Security
 
-The SQLite database (`expenses.db`) implements a clean relational schema using SQLAlchemy ORM:
+The project enforces synchronized validation at both the frontend UI and backend API layers:
+
+| Field | Validation Rule | Enforcement Layer |
+|---|---|---|
+| **Username** | 3 to 50 characters, non-empty, whitespace stripped, globally unique | Frontend Form & Pydantic `@field_validator` |
+| **Email** | Valid email RFC format (`user@domain.com`), unique per user | Frontend Form & Pydantic `EmailStr` |
+| **Password** | Minimum 8 characters, confirmation matching | Frontend Form & Pydantic Schema |
+| **Password Storage** | PBKDF2-HMAC-SHA256 with random salt (never plaintext) | Backend `backend/auth.py` |
+| **Session Security** | JWT Bearer token with expiration | FastAPI `OAuth2PasswordBearer` & PyJWT |
+| **Expense Title** | Non-empty, 1-100 characters, whitespace stripped | Frontend & Pydantic `@field_validator` |
+| **Expense Amount** | Positive float strictly greater than 0 (`gt=0`), min $0.01 | Frontend & Pydantic `Field(..., gt=0)` |
+| **Expense Date** | Valid ISO Date (`YYYY-MM-DD`) | Streamlit Date Picker & Pydantic `date` |
+| **Expense Category** | Whitelist of predefined standard categories | Frontend Selectbox & Pydantic validator |
+
+---
+
+## 🗄️ Database Schema Design
+
+The SQLite database (`expenses.db`) implements a clean relational schema mapped via SQLAlchemy ORM:
 
 ```mermaid
 erDiagram
     USERS ||--o{ EXPENSES : "creates / owns"
     USERS {
-        int id PK
-        string username UK
-        string email UK
-        string hashed_password
-        datetime created_at
+        int id PK "Auto Increment"
+        string username UK "Unique, 3-50 chars"
+        string email UK "Unique, valid email"
+        string hashed_password "PBKDF2 Salted Hash"
+        datetime created_at "Timestamp"
     }
     EXPENSES {
-        int id PK
-        int user_id FK
-        string title
-        float amount
-        string category
-        date date
-        string description
-        datetime created_at
+        int id PK "Auto Increment"
+        int user_id FK "References USERS.id"
+        string title "1-100 chars"
+        float amount "gt 0.0"
+        string category "Standard category"
+        date date "YYYY-MM-DD"
+        string description "Optional notes"
+        datetime created_at "Timestamp"
     }
 ```
 
-- **Relationships**: `User.expenses` has a one-to-many relationship with `Expense.owner`.
-- **Cascade Deletion**: If a user is deleted, all their associated expenses are safely removed (`cascade="all, delete-orphan"`).
-- **Data Isolation**: Each user can only view, edit, or delete expenses linked to their own `user_id`.
+- **One-to-Many Relationship**: Each `User` can own multiple `Expense` records.
+- **Strict Data Isolation**: SQL queries are scoped by the authenticated user's `user_id`. Users can never access or modify each other's expenses.
+- **Cascade Deletion**: If a user is deleted, all their associated expense entries are safely removed (`cascade="all, delete-orphan"`).
 
 ---
 
+## 🔧 Environment Configuration
 
+The application works out of the box with default settings, but supports environment variable overrides:
+
+| Variable | Default Value | Description |
+|---|---|---|
+| `API_BASE_URL` | `http://127.0.0.1:8000` | Target URL used by the Streamlit frontend to communicate with the FastAPI backend. |
+
+To point the Streamlit frontend to an external or alternate backend:
+```bash
+# On Linux/macOS:
+export API_BASE_URL="http://your-custom-backend-url"
+streamlit run frontend/app.py
+
+# On Windows (PowerShell):
+$env:API_BASE_URL="http://your-custom-backend-url"
+streamlit run frontend/app.py
+```
+
+---
+
+## ❓ Troubleshooting & FAQs
+
+<details>
+<summary><b>1. PowerShell gives "Script Execution Policy" error when activating .venv</b></summary>
+
+By default, Windows PowerShell restricts script execution. You can bypass this for the current terminal session without altering system-wide settings:
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+```
+</details>
+
+<details>
+<summary><b>2. "Port 8000 or 8501 is already in use"</b></summary>
+
+If port `8000` or `8501` is being used by another service:
+- Run FastAPI on a different port:
+  ```bash
+  uvicorn main:app --port 8080 --reload
+  ```
+- Then point Streamlit to the new port:
+  ```bash
+  $env:API_BASE_URL="http://127.0.0.1:8080"
+  streamlit run frontend/app.py --server.port 8502
+  ```
+</details>
+
+<details>
+<summary><b>3. Where is database data stored?</b></summary>
+
+All data is stored in the local SQLite database file `expenses.db` created in the project root. If you ever want a fresh, clean database for testing, simply delete `expenses.db` and re-run the application; it will automatically recreate empty tables.
+</details>
+
+---
+
+## 👨‍💻 Project Submission Info
+
+- **Project:** Personal Expense Tracker
+- **Sprint:** Nolyth Sprint 01 — Backend Foundations
+- **GitHub Repository:** [ARKhalid123/Sprint_1_Nolyth](https://github.com/ARKhalid123/Sprint_1_Nolyth)
+- **Live Streamlit App:** [sprint1nolyth.streamlit.app](https://sprint1nolyth.streamlit.app/)
