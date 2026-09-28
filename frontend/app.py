@@ -27,6 +27,12 @@ def check_backend_status():
 # Singleton background runner for FastAPI on Streamlit Cloud (executes exactly once)
 @st.cache_resource
 def ensure_backend_running():
+    try:
+        if hasattr(st, "secrets") and "DATABASE_URL" in st.secrets:
+            os.environ["DATABASE_URL"] = str(st.secrets["DATABASE_URL"])
+    except Exception:
+        pass
+
     if not check_backend_status() and "127.0.0.1" in API_BASE_URL:
         from main import app as fastapi_app
 
@@ -45,6 +51,8 @@ def ensure_backend_running():
 
 
 ensure_backend_running()
+
+from backend.database import SQLALCHEMY_DATABASE_URL
 
 st.set_page_config(
     page_title="Personal Expense Tracker",
@@ -142,6 +150,11 @@ def render_auth_page():
     backend_live = check_backend_status()
     if not backend_live:
         st.warning("Backend is offline or unreachable. Please start the FastAPI server via `uvicorn main:app --reload`.", icon=":material/wifi_off:")
+
+    is_cloud_db = SQLALCHEMY_DATABASE_URL.startswith("postgresql")
+    db_badge = "Supabase (PostgreSQL)" if is_cloud_db else "SQLite (Local / Ephemeral)"
+    db_icon = ":material/cloud_done:" if is_cloud_db else ":material/storage:"
+    st.caption(f"{db_icon} Active Database: **{db_badge}**")
 
     tab_login, tab_register = st.tabs([":material/login: Sign In", ":material/person_add: Create Account"])
 
@@ -457,8 +470,11 @@ def main():
             st.rerun()
 
         st.markdown("---")
+        is_cloud_db = SQLALCHEMY_DATABASE_URL.startswith("postgresql")
+        db_badge = "Supabase (PostgreSQL)" if is_cloud_db else "SQLite (Local)"
+        db_icon = ":material/cloud_done:" if is_cloud_db else ":material/storage:"
+        st.caption(f"{db_icon} Database: **{db_badge}**")
         st.caption("Sprint 01 - Nolyth Backend Foundations")
-        st.caption("FastAPI • SQLite • Streamlit")
 
     # Render selected view
     if menu_selection == ":material/dashboard: Dashboard":
